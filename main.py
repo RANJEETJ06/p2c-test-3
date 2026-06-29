@@ -1,31 +1,28 @@
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+
+app = FastAPI()
 
 
-class Handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-
-        html = """
-        <html>
+@app.get("/", response_class=HTMLResponse)
+async def home():
+    return """
+    <html>
         <head>
             <title>Phone2Cloud Server</title>
         </head>
         <body style="font-family:Arial;text-align:center;padding-top:100px;">
             <h1>🚀 Server is Running</h1>
-            <p>Phone2Cloud backend is online.</p>
+            <h2>Phone2Cloud Backend Online</h2>
+            <p>Status: 🟢 Healthy</p>
         </body>
-        </html>
-        """
-
-        self.wfile.write(html.encode())
+    </html>
+    """
 
 
-if __name__ == "__main__":
-    server = HTTPServer(("0.0.0.0", 8000), Handler)
-
-    print("🚀 Server running on http://localhost:8000")
-    print("🌐 LAN access: http://YOUR_IP:8000")
-
-    server.serve_forever()
+@app.get("/health")
+async def health():
+    return {
+        "status": "healthy",
+        "message": "Server is running"
+    }
